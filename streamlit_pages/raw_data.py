@@ -9,4 +9,4 @@ def raw_data():
         return
     
     twix = st.session_state.twix
-    st.text(json.dumps(twix[-1]['hdr'], indent=4))
+    st.text(json.dumps(twix['hdr'], indent=4))

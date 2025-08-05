@@ -34,13 +34,13 @@ def pmu_stats():
     twix = st.session_state.twix
     df = st.session_state.df
     
-    if 'pmu' not in st.session_state.twix[-1]:
+    if 'pmu' not in st.session_state.twix:
         st.error("❗ No PMU data found in the Twix file. \
             Please ensure the raw data contains physiological data.")
         return
     
     # Choose trigger method
-    pmu_data = twix[-1]['pmu']
+    pmu_data = twix['pmu']
     default_keys = [
         key for key in pmu_data.signal 
         if not key.startswith('LEARN_') 
