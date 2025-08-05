@@ -1,6 +1,6 @@
 import streamlit as st
 import os
-from twixtools import twixtools
+from recotwix import recotwix
 from utils.twix_dataframe import build_line_dataframe
 
 def select_raw_data():
@@ -15,10 +15,11 @@ def select_raw_data():
             with open("uploaded_file.dat", "wb") as f:
                 f.write(st.session_state.buffer_file)
             try:
-                twix = twixtools.read_twix("uploaded_file.dat")
-                st.session_state.twix = twix
+                reco = recotwix("uploaded_file.dat")
+                st.session_state.recotwix = reco
+                st.session_state.twix = reco.twixobj
                 st.success("File loaded!")
-                st.session_state.df = build_line_dataframe(twix)
+                st.session_state.df = build_line_dataframe(reco.twixobj)
                 st.session_state.file = os.path.basename(uploaded_file.name)
                 st.session_state.img_nii = None
                 st.session_state.image_buffer = None
