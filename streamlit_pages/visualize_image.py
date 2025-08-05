@@ -95,18 +95,19 @@ def obtain_image():
         "Upload PNG file",
         "Upload DICOM directory",
         "SENSE reconstruction with POCS",
-        "Direct reconstruction (handle GRAPPA)"
+        "Direct reconstruction (handle GRAPPA)",
+        "Remove corrupted data & compress Sensing",
     ]
 
-    # Step 1: Selectbox for choosing the method
+    # Choice 1: Selectbox for choosing the method
     choice = st.selectbox("Choose an image source:", options)
 
-    # Step 2: Logic to wait for meaningful user interaction
+    # Choice 2: Logic to wait for meaningful user interaction
     if choice == "Select an option...":
         st.warning("Please choose a method to continue.")
         st.stop()
 
-    # Step 3: If upload is selected, show uploader and wait for file
+    # Choice 3: If upload is selected, show uploader and wait for file
     elif choice == "Upload PNG file":
         uploaded_file = st.file_uploader("Upload your PNG file", type=["png", "jpeg"])
         if not uploaded_file:
@@ -130,7 +131,7 @@ def obtain_image():
             # Create NIfTI image
             img_nii = nib.Nifti1Image(img_3d, affine)
 
-    # Step 4: If upload is selected, show uploader and wait for folder
+    # Choice 4: If upload is selected, show uploader and wait for folder
     elif choice == "Upload DICOM directory":
         uploaded_files = st.file_uploader(
             "Upload multiple DICOM (.dcm) files", type=["dcm"], accept_multiple_files=True
@@ -143,36 +144,46 @@ def obtain_image():
             img_nii = convert_dicoms_to_nifti_object(uploaded_files)
 
     
-    # Step 5: If SENSE reconstruction selected, process accordingly
+    # Choice 5: If SENSE reconstruction selected, process accordingly
     elif choice == "SENSE reconstruction with POCS":
-        # Call your reconstruction function here
-        coil_sens_methods = [
-            "Select an option...",
-            "caldir",
-            "espirit",
-        ]
-        method_sensitivity = st.selectbox("Choose coil sensitivity method:", coil_sens_methods)
-        if method_sensitivity == "Select an option...":
-            st.warning("Please choose a coil sensitivity method to continue.")
-            st.stop()
         with st.spinner("Reconstructing image..."):
-            with open("uploaded_file.dat", "wb") as f:
-                f.write(st.session_state.buffer_file)
-            reco = recotwix("uploaded_file.dat")
-            reco.runReco(method_sensitivity=method_sensitivity)
+            reco = st.session_state.recotwix
+            reco.runReco()
             img_nii = reco.make_nifti(reco.img.abs())
-            os.remove("uploaded_file.dat")
-            
-    # Step 6: Direct reconstruction
-    else:
+        
+    # Choice 6: Direct reconstruction
+    elif choice == "Direct reconstruction (handle GRAPPA)":
         # Call your reconstruction function here
         with st.spinner("Reconstructing image..."):
-            with open("uploaded_file.dat", "wb") as f:
-                f.write(st.session_state.buffer_file)
-            reco = recotwix("uploaded_file.dat")
+            reco = st.session_state.recotwix
             reco.runReco_GRAPPA()
             img_nii = reco.make_nifti(reco.img.abs())
-            os.remove("uploaded_file.dat")
+    
+    # Choice 7: Remove corrupted shot and perform Compress Sensing
+    else:
+        regularization_value = st.slider("Regularization value (L1)", 0.001, 1., 0.1, 0.001)
+            # Choose trigger method
+        pmu_data = st.session_state.twix['pmu']
+        default_keys = [
+            key for key in pmu_data.signal 
+            if not key.startswith('LEARN_') 
+            and np.ptp(pmu_data.signal[key])>0
+        ]
+        selected = st.selectbox(
+            "Choose a trigger method:", 
+            default_keys,
+            key='trigger_method',
+        )
+        delta_RD = st.slider('Range of accepted Recovery Durations (ms)', 10, 1000, 100, 10)
+        
+        if st.button('Launch CS Reconstruction'):
+            with st.spinner("Reconstructing image..."):
+                reco = st.session_state.recotwix
+                reco.runReco_corrupted_RD_cs(trigger_method=selected, regularization_value=regularization_value, delta_RD=delta_RD*1e-3)
+                img_nii = reco.make_nifti(reco.img.abs())
+        else:
+            st.info('Select reconstruction parameters to continue')
+            st.stop()
     return img_nii
 
 
