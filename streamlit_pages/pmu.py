@@ -72,7 +72,7 @@ def pmu():
         st.error("❗ Please upload a raw data file  first.")
         return
 
-    pmu_data = st.session_state.twix[-1]['pmu']
+    pmu_data = st.session_state.twix['pmu']
     # discard empty signals and learning signals
     default_keys = [
         key for key in pmu_data.signal 

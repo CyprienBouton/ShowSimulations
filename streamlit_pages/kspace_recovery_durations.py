@@ -62,13 +62,13 @@ def kspace_recovery_durations():
     twix = st.session_state.twix
     df = st.session_state.df
     
-    if 'pmu' not in st.session_state.twix[-1]:
+    if 'pmu' not in st.session_state.twix:
         st.error("❗ No PMU data found in the Twix file. \
             Please ensure the raw data contains physiological data.")
         return
     
     # Choose trigger method
-    pmu_data = twix[-1]['pmu']
+    pmu_data = twix['pmu']
     default_keys = [
         key for key in pmu_data.signal 
         if not key.startswith('LEARN_') 
@@ -86,7 +86,7 @@ def kspace_recovery_durations():
         return
             
     
-    is3D = twix[-1]['hdr']['Config']['Is3D'].lower() == 'true'
+    is3D = twix['hdr']['Config']['Is3D'].lower() == 'true'
 
     marker_size = st.sidebar.slider("Marker Size", 2, 10, 6)
     show_flags = st.sidebar.checkbox("Show Flags", value=False)

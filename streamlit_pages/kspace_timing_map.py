@@ -46,7 +46,7 @@ def kspace_timing_map():
 
     df = st.session_state.df
     twix = st.session_state.twix
-    is3D = twix[-1]['hdr']['Config']['Is3D'].lower() == 'true'
+    is3D = twix['hdr']['Config']['Is3D'].lower() == 'true'
 
     marker_size = st.sidebar.slider("Marker Size", 2, 10, 6)
     show_flags = st.sidebar.checkbox("Show Flags", value=False)
