@@ -13,11 +13,17 @@ def udpate_trigger_method():
 
 def plot_hist(df, rd_min=None, rd_max=None):
     fig = go.Figure()
+    if rd_min is not None and rd_max is not None:
+        x_range = rd_max - rd_min
+    else:
+        x_range = df.RD.max() - df.RD.min()
+
+    nbinsx = int(50 * (df.RD.max() - df.RD.min())/ x_range)
     
     # Adjusting the number of bins to control bar width
     fig.add_trace(go.Histogram(
         x=df.RD, 
-        nbinsx=30  # Fewer bins = wider bars
+        nbinsx=nbinsx  # Fewer bins = wider bars
     ))
 
     fig.update_layout(
