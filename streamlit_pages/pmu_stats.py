@@ -13,16 +13,30 @@ def udpate_trigger_method():
 
 def plot_hist(df, rd_min=None, rd_max=None):
     fig = go.Figure()
-    fig.add_trace(go.Histogram(x=df.RD, nbinsx=50))
+    
+    # Adjusting the number of bins to control bar width
+    fig.add_trace(go.Histogram(
+        x=df.RD, 
+        nbinsx=30  # Fewer bins = wider bars
+    ))
+
     fig.update_layout(
         xaxis=dict(
             title="Recovery duration (seconds)",
+            title_font=dict(size=20),  # Title font size
+            tickfont=dict(size=20),    # Tick label font size
             range=[rd_min, rd_max] if rd_min is not None and rd_max is not None else None
         ),
-        yaxis=dict(title="Number of occurrences"),
+        yaxis=dict(
+            title="Number of occurrences",
+            title_font=dict(size=20),  # Title font size
+            tickfont=dict(size=20)     # Tick label font size
+        ),
         height=800, width=800,
-        template='simple_white'
+        template='simple_white',
+        bargap=0.1,  # Slight gap between bars
     )
+    
     return fig
 
 def pmu_stats():
