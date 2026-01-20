@@ -6,7 +6,7 @@ The goal of this repository is to visualize Siemens twix raw data (.dat).
 
 To use this project, first clone the repo on your device using the command below:
 ```
-git clone https://github.com/CyprienBouton/Simulations.git
+git clone https://github.com/CyprienBouton/ShowSimulations.git
 ```
 Go into the repository
 ```
