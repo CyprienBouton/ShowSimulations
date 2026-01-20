@@ -6,16 +6,16 @@ The goal of this repository is to visualize Siemens twix raw data (.dat).
 
 To use this project, first clone the repo on your device using the command below:
 ```
-git clone https://github.com/CyprienBouton/ShowTwix.git
+git clone https://github.com/CyprienBouton/Simulations.git
 ```
 Go into the repository
 ```
-cd ShowTwix
+cd ShowSimulations
 ```
 Create and activate a virtual environment (example with conda)
 ```
-conda create -n RecoTwix python=3.10
-conda activate RecoTwix
+conda create -n ShowSimulations python=3.10
+conda activate ShowSimulations
 ```
 install the requirements
 ```
