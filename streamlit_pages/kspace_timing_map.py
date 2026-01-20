@@ -40,13 +40,12 @@ def plot_fig(df, marker_size, is3D, show_flags):
 
 def kspace_timing_map():
     st.header("K-Space Timing Map")
-    if 'df' not in st.session_state or 'twix' not in st.session_state:
+    if 'df' not in st.session_state:
         st.error("❗ Please upload a raw data file  first.")
         return
 
     df = st.session_state.df
-    twix = st.session_state.twix
-    is3D = twix['hdr']['Config']['Is3D'].lower() == 'true'
+    is3D = True
 
     marker_size = st.sidebar.slider("Marker Size", 2, 10, 6)
     show_flags = st.sidebar.checkbox("Show Flags", value=False)
