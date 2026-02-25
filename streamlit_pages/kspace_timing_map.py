@@ -3,18 +3,15 @@ import time
 import plotly.graph_objects as go
 import numpy as np
 
-def plot_fig(df, marker_size, is3D, show_flags):
+def plot_fig(df, marker_size, is3D):
     y = df.Par if is3D else df.Sli
     ylabel = 'Partition' if is3D else 'Slice'
     acquisition_times = df.Time - df.Time.min()
     
     # Prepare hover data
-    base_customdata = np.vstack([[ylabel] * len(df), acquisition_times]).T
-    customdata = base_customdata if not show_flags \
-        else np.hstack([base_customdata, df[['Flags']].values])
+    customdata = np.vstack([[ylabel] * len(df), acquisition_times]).T
     hovertemplate = (
         f'Line: %{{x}}<br>{ylabel}: %{{y}}<br>Time: %{{customdata[1]:.2f}} s' +
-        ('<br>Flags: %{customdata[2]}' if show_flags else '') +
         '<extra></extra>'
     )
 
@@ -48,7 +45,6 @@ def kspace_timing_map():
     is3D = True
 
     marker_size = st.sidebar.slider("Marker Size", 2, 10, 6)
-    show_flags = st.sidebar.checkbox("Show Flags", value=False)
 
-    fig = plot_fig(df, marker_size, is3D, show_flags)
+    fig = plot_fig(df, marker_size, is3D)
     st.plotly_chart(fig, use_container_width=True)

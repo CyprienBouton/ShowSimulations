@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 
-def plot_fig(df, marker_size, is3D, show_flags, cmin, cmax):
+def plot_fig(df, marker_size, is3D, cmin, cmax):
     # Set colorbar scale
     if cmin is None:
         cmin = df.RD.min()
@@ -16,12 +16,9 @@ def plot_fig(df, marker_size, is3D, show_flags, cmin, cmax):
     ylabel = 'Partition' if is3D else 'Slice'
     
     # Prepare hover data
-    base_customdata = np.vstack([[ylabel] * len(df), df.RD]).T
-    customdata = base_customdata if not show_flags \
-        else np.hstack([base_customdata, df[['Flags']].values])
+    customdata = np.vstack([[ylabel] * len(df), df.RD]).T
     hovertemplate = (
         f'Line: %{{x}}<br>{ylabel}: %{{y}}<br>recovery duration: %{{customdata[1]:.2f}} s' +
-        ('<br>Flags: %{customdata[2]}' if show_flags else '') +
         '<extra></extra>'
     )
 
@@ -57,7 +54,6 @@ def kspace_recovery_durations():
     is3D = True
 
     marker_size = st.sidebar.slider("Marker Size", 2, 10, 6)
-    show_flags = st.sidebar.checkbox("Show Flags", value=False)
 
     scale_colorbar = st.sidebar.checkbox("Scale colorbar", value=True)
 
@@ -68,5 +64,5 @@ def kspace_recovery_durations():
         cmin, cmax = None, None
 
 
-    fig = plot_fig(df, marker_size, is3D, show_flags, cmin, cmax)
+    fig = plot_fig(df, marker_size, is3D, cmin, cmax)
     st.plotly_chart(fig, use_container_width=True)
