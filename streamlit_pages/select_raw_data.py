@@ -27,6 +27,8 @@ def select_raw_data():
                 seq = mr0.Sequence.import_file(tmp_file_path)
     
         reco = RecoMRzero(seq)
+        st.success("File loaded successfully!")
+        st.session_state.reco = reco
         st.session_state.df = reco.get_reco_dataframe()
         # Optionally, remove the temporary file if no longer needed
         os.remove(tmp_file_path)
