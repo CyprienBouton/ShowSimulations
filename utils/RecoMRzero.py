@@ -102,13 +102,14 @@ class RecoMRzero:
         return inter_scan_matrix
     
     def get_timing_matrix(self, dtype=torch.float, device='cpu'):
-        timing_matrix = torch.full((self.ny, self.nz), torch.nan, dtype=dtype, device=device)
+        timing_matrix = torch.full((self.nx, self.ny, self.nz), torch.nan, dtype=dtype, device=device)
         times_after = torch.cumsum(torch.tensor([r.event_time.sum() for r in self.seq0]), dim=0)
+        times_before = torch.tensor([ 0. ] + list(times_after[:-1]))
         times_signal = torch.cat([
                 torch.full((int(r.adc_usage.sum()),), t, dtype=dtype)
-                for r, t in zip(self.seq0, times_after)
+                for r, t in zip(self.seq0, times_before)
         ])
-        timing_matrix[self.iy, self.iz] = torch.tensor(times_signal, dtype=dtype, device=device)
+        timing_matrix[self.ix, self.iy, self.iz] = torch.tensor(times_signal, dtype=dtype, device=device)
         return timing_matrix
 
     def get_reco_dataframe(self):
