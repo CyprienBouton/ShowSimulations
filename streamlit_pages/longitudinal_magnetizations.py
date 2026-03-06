@@ -67,10 +67,7 @@ def longitudinal_magnetizations():
     seq0 = st.session_state.reco.seq0.cpu()
     TI = get_TI_from_seq(seq0).mean().item() # average TI across shots in seconds
     
-    readout_times = torch.cat([
-                torch.full((int(r.adc_usage.sum()),), t, dtype=torch.float64)
-                for r, t in zip(seq0, st.session_state.reco.get_timing_matrix().flatten())
-    ]).unique().cpu().numpy()
+    readout_times = st.session_state.reco.get_timing_matrix().unique().cpu().numpy()
     trigger_times, _ = get_IR(seq0)
     
     default_flip_angle = [torch.rad2deg(r.pulse.angle).item() for r in seq0 if r.adc_usage.sum()>0][0]
