@@ -29,17 +29,30 @@ def plot_fig(df, marker_size, is3D, cmin, cmax):
         y=y,
         mode='markers',
         marker=dict(size=marker_size, color=df.RD, colorscale='jet',
-                    colorbar=dict(title='recovery duration (s)'),
+                    colorbar=dict(title='Recovery duration (s)'),
                     cmin=cmin, cmax=cmax),
         customdata=customdata,
         hovertemplate=hovertemplate,
         showlegend=False,
     ))
     fig.update_layout(
-        xaxis=dict(title="Line"),
-        yaxis=dict(title=ylabel),
+        xaxis=dict(
+            title="Line", 
+            title_font=dict(size=20), 
+            tickfont=dict(size=18), 
+            tickwidth=2,
+            tickcolor='black',
+        ),
+        yaxis=dict(
+            title=ylabel, 
+            title_font=dict(size=20), 
+            tickfont=dict(size=18), 
+            tickwidth=2,
+            tickcolor='black',
+        ),
         height=800, width=800,
-        template='simple_white'
+        template='simple_white',
+        font=dict(size=16)
     )
     return fig
 
