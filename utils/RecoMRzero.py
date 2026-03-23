@@ -113,7 +113,7 @@ class RecoMRzero:
         return timing_matrix
 
     def get_reco_dataframe(self):
-        timing_matrix = self.get_timing_matrix().cpu().numpy()
+        timing_matrix = self.get_timing_matrix().cpu().numpy().mean(0)
         inter_scan_matrix = self.get_inter_scan_duration().cpu().numpy()
         data = []
         for i in range(self.ny):
@@ -121,13 +121,4 @@ class RecoMRzero:
                 data.append([i, j, timing_matrix[i, j], inter_scan_matrix[i, j]])
         df = pd.DataFrame(data, columns=['Lin', 'Par', 'Time', 'RD'])
         return df
-
-if __name__ == "__main__":
-    import os
-    import pickle
-    seq_file = os.path.expanduser('~/Simulation/16_clinical_fl3d_no_acc/TI175_T1MES_no_correction.pkl')
-    seq = pickle.load(open(seq_file, 'rb'))
-    reco = RecoMRzero(seq)
-    reco.get_reco_dataframe()
-    print("k-space grid shape:")
     
