@@ -28,31 +28,36 @@ def plot_fig(df, marker_size, is3D, cmin, cmax):
         x=df.Lin,
         y=y,
         mode='markers',
-        marker=dict(size=marker_size, color=df.RD, colorscale='jet',
-                    colorbar=dict(title='Recovery duration (s)'),
+        marker=dict(size=marker_size, color=df.RD*1e3, colorscale='jet',
+                    colorbar=dict(
+                        title='Time between<br> triggers (ms)',
+                        title_font=dict(size=22, color='black'),
+                        tickfont=dict(size=18, color='black'),
+                    ),
                     cmin=cmin, cmax=cmax),
         customdata=customdata,
         hovertemplate=hovertemplate,
         showlegend=False,
     ))
+
     fig.update_layout(
         xaxis=dict(
             title="Line", 
-            title_font=dict(size=20), 
-            tickfont=dict(size=18), 
+            title_font=dict(size=24, color='black'),  # Title font size and color
+            tickfont=dict(size=20, color='black'),  # Tick font size and color
             tickwidth=2,
             tickcolor='black',
         ),
         yaxis=dict(
             title=ylabel, 
-            title_font=dict(size=20), 
-            tickfont=dict(size=18), 
+            title_font=dict(size=24, color='black'),  # Title font size and color
+            tickfont=dict(size=20, color='black'),  # Tick font size and color
             tickwidth=2,
             tickcolor='black',
         ),
         height=800, width=800,
         template='simple_white',
-        font=dict(size=16)
+        font=dict(size=20),
     )
     return fig
 
@@ -77,5 +82,5 @@ def kspace_recovery_durations():
         cmin, cmax = None, None
 
 
-    fig = plot_fig(df, marker_size, is3D, cmin, cmax)
+    fig = plot_fig(df, marker_size, is3D, cmin*1e3, cmax*1e3) # in ms
     st.plotly_chart(fig, use_container_width=True)
