@@ -1,6 +1,9 @@
-############################
-# Import necessary libraries
-############################
+"""Longitudinal magnetization (Mz) model of a triggered, segmented IR acquisition
+with SPPRESS fat saturation, and optimisation of a correction pulse (t_a, alpha_b)
+that restores Mz after irregular RR intervals.
+
+The same file exists in ShowTwix/utils (keep both in sync).
+"""
 
 import numpy as np
 from scipy.stats import mode
@@ -11,13 +14,16 @@ from scipy.optimize import differential_evolution
 ############################
 
 def compute_E1(duration, T1):
+    """T1 relaxation factor exp(-duration / T1)."""
     return np.exp(-duration / T1)
 
 def compute_relaxation(Mz, duration, T1):
+    """Mz after free T1 recovery during ``duration`` (M0 = 1)."""
     E1 = compute_E1(duration, T1)
     return Mz * E1 + (1 - E1)
 
 def get_min_delta_triggers(readout_times, trigger_times, SPPRESS_duration=0.01750): # SPPRESS duration is around 17.5 ms
+    """Largest (last readout of a shot + SPPRESS) - previous trigger, i.e. the minimum usable trigger interval [s]."""
     min_delta_trigger_seq = 0
     i = 0
     last_trigger_time = None
@@ -32,6 +38,7 @@ def get_min_delta_triggers(readout_times, trigger_times, SPPRESS_duration=0.0175
     return min_delta_trigger_seq
 
 def get_TR(trigger_times, readout_times):
+    """Average time between readouts of the first shot [s]."""
     TR = 0
     i = 0
     for t in trigger_times:
@@ -43,6 +50,7 @@ def get_TR(trigger_times, readout_times):
     return TR
 
 def get_segments(trigger_times, readout_times):
+    """Number of readouts per shot (segments), from the readouts before the first trigger."""
     i = 0
     for t in trigger_times:
         while i < len(readout_times) and readout_times[i] < t:
@@ -52,6 +60,7 @@ def get_segments(trigger_times, readout_times):
     raise ValueError("Trigger times are not compatible with readout times. Please check the input data.")
 
 def find_corrupted_shot(delta_triggers, tolerance=0.15, precision=5e-2):
+    """Boolean per shot: True when the previous RR interval deviates from the mode by more than ``tolerance`` (relative); the first shot is never corrupted."""
     delta_triggers_rounded = np.round((delta_triggers / precision)) * precision
 
     # Calculate mode using scipy.stats.mode

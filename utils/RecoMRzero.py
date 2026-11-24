@@ -1,3 +1,8 @@
+"""Timing analysis of MRzero sequences on the Cartesian k-space grid (ShowSimulations copy).
+
+Derived from the reconstruction class of MRzeroReconstructCore
+(``MRzeroReconstructCoreLib.RecoMRzero``), reduced to the gridding / timing part.
+"""
 import torch
 import numpy as np
 import torch.nn.functional as F
@@ -35,6 +40,12 @@ def extract_indices_from_kspace_coords(kspace_coords: torch.Tensor, dk: float) -
 
 
 class RecoMRzero:
+    """Map the ADC samples of an MRzero sequence to a Cartesian k-space grid and
+    derive per-line timings (acquisition time, recovery duration).
+
+    Trimmed copy of the reconstruction class (no signal / reconstruction needed):
+    the grid indices ``ix, iy, iz`` and sizes ``nx, ny, nz`` are computed in ``__init__``.
+    """
     def __init__(self, seq0, dx=None, dy=None, dz=None):
         self.seq0 = seq0
         self.dx = dx
@@ -76,7 +87,6 @@ class RecoMRzero:
                 self.dz = 1/(5e-3)  # Assume 5mm spacing if only one slice
 
         # Compute nearest grid indices
-        # import pdb; pdb.set_trace() 
         self.ix = extract_indices_from_kspace_coords(kx_rounded, self.dx)
         self.iy = extract_indices_from_kspace_coords(ky_rounded, self.dy)
         self.iz = extract_indices_from_kspace_coords(kz_rounded, self.dz)
@@ -85,6 +95,7 @@ class RecoMRzero:
         self.nx, self.ny, self.nz = self.ix.max()+1, self.iy.max()+1, self.iz.max()+1
     
     def get_inter_scan_duration(self, eps=0.2, dtype=torch.float, device='cpu'):
+        """``[ny, nz]`` tensor: time [s] between the inversion preceding each line and the previous inversion (NaN if none)."""
         inter_scan_matrix = torch.full((self.ny, self.nz), torch.nan, dtype=dtype, device=device)
         times_after = torch.cumsum(torch.tensor([r.event_time.sum() for r in self.seq0]), dim=0)
         times_before = torch.tensor([ 0. ] + list(times_after[:-1]))
@@ -102,6 +113,7 @@ class RecoMRzero:
         return inter_scan_matrix
     
     def get_timing_matrix(self, dtype=torch.float, device='cpu'):
+        """``[nx, ny, nz]`` tensor: start time [s] of the repetition in which each sample was acquired."""
         timing_matrix = torch.full((self.nx, self.ny, self.nz), torch.nan, dtype=dtype, device=device)
         times_after = torch.cumsum(torch.tensor([r.event_time.sum() for r in self.seq0]), dim=0)
         times_before = torch.tensor([ 0. ] + list(times_after[:-1]))
@@ -113,6 +125,7 @@ class RecoMRzero:
         return timing_matrix
 
     def get_reco_dataframe(self):
+        """One row per (line, partition): ``Lin, Par, Time`` (mean over the readout) and ``RD`` (recovery duration) [s]."""
         timing_matrix = self.get_timing_matrix().cpu().numpy().mean(0)
         inter_scan_matrix = self.get_inter_scan_duration().cpu().numpy()
         data = []

@@ -2,3 +2,6 @@ dash == 3.0.4
 pandas == 2.3.0
 streamlit == 1.45.1
 mrzerocore == 0.4.3
+# used directly by the pages / utils (plotly also comes with dash)
+plotly
+scipy

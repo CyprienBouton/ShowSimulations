@@ -1,9 +1,11 @@
-import streamlit as st
-import time
-import plotly.graph_objects as go
+"""Page "Acquisition Timeline": k-space map (line x partition) coloured by acquisition time."""
 import numpy as np
+import plotly.graph_objects as go
+import streamlit as st
+
 
 def plot_fig(df, marker_size, is3D):
+    """Scatter plot of the k-space lines coloured by ``df.Time`` relative to the first line."""
     y = df.Par if is3D else df.Sli
     ylabel = 'Partition' if is3D else 'Slice'
     acquisition_times = df.Time - df.Time.min()

@@ -1,16 +1,19 @@
-import streamlit as st
-import io
-import plotly.graph_objects as go
+"""Page "Recovery Durations": k-space map (line x partition) coloured by the
+recovery duration (time between the two inversions preceding the line)."""
 import numpy as np
-import pandas as pd
+import plotly.graph_objects as go
+import streamlit as st
 
 
 def plot_fig(df, marker_size, is3D, cmin, cmax):
-    # Set colorbar scale
+    """Scatter plot of the k-space lines coloured by ``df.RD`` (shown in ms).
+
+    ``cmin`` / ``cmax`` are the colour limits in ms (``None`` = data range).
+    """
     if cmin is None:
-        cmin = df.RD.min()
+        cmin = df.RD.min() * 1e3
     if cmax is None:
-        cmax = df.RD.max()
+        cmax = df.RD.max() * 1e3
 
     y = df.Par
     ylabel = 'Partition' if is3D else 'Slice'
@@ -82,5 +85,9 @@ def kspace_recovery_durations():
         cmin, cmax = None, None
 
 
-    fig = plot_fig(df, marker_size, is3D, cmin*1e3, cmax*1e3) # in ms
+    fig = plot_fig(
+        df, marker_size, is3D,
+        None if cmin is None else cmin * 1e3,  # s -> ms
+        None if cmax is None else cmax * 1e3,
+    )
     st.plotly_chart(fig, use_container_width=True)

@@ -1,3 +1,7 @@
+"""Sequence helpers (inversion times, TI per shot) for MRzero sequences.
+
+Old copy of ``correct_mrzero_seq`` from run_simulation_cluster (package ``mrsim``).
+"""
 import numpy as np
 import torch
 import MRzeroCore as mr0
@@ -70,6 +74,7 @@ def get_IR(seq0: mr0.sequence.Sequence):
 
 
 def get_col_center_idx(rep):
+    """Index (in the repetition) of the ADC sample with the smallest x gradient moment, used as echo centre."""
     if rep.adc_usage.sum() > 0:
         kspace = rep.gradm
         adc_mask = rep.adc_usage>0

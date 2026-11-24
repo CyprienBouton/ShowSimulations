@@ -1,10 +1,11 @@
-import streamlit as st
-import io
-import plotly.graph_objects as go
+"""Page "Recovery Durations Stats": histogram of the per-line recovery durations."""
 import numpy as np
-import pandas as pd
+import plotly.graph_objects as go
+import streamlit as st
+
 
 def plot_hist(df, rd_min=None, rd_max=None):
+    """Histogram of ``df.RD``; about 50 bins over the displayed x range."""
     fig = go.Figure()
     if rd_min is not None and rd_max is not None:
         x_range = rd_max - rd_min

@@ -1,7 +1,5 @@
-################
-# Import necessary libraries
-################
-
+"""Page "Longitudinal Magnetizations": Mz(t) of user-defined T1 species for the
+trigger / readout timings of the loaded sequence, with optional correction pulse."""
 
 import streamlit as st
 import numpy as np
@@ -123,8 +121,8 @@ def plot_magnetization(
     FA, 
     do_SPPRESS=True, 
     reordering='Centric', 
-    t_a=0, 
-    alpha_b=0,
+    t_a=None, 
+    alpha_b=None,
 ):
     """plot the magnetization from trigger and readout timings.
 
@@ -136,8 +134,8 @@ def plot_magnetization(
         FA (float): flip angle in degrees.
         do_SPPRESS (bool, optional): whether to do SPPRESS. Defaults to True.
         reordering (str, optional): reordering scheme. Defaults to 'Centric'.
-        t_a (float, optional): delay of the optimized block pre readout in seconds. Defaults to 0.
-        alpha_b (float, optional): alpha_b pulse angle in degrees. Defaults to 0.
+        t_a (float, optional): delay of the optimized block pre readout in seconds. None = no correction.
+        alpha_b (float, optional): alpha_b pulse angle in degrees. None = no correction.
     """
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=readout_times, y=[0]*len(readout_times), mode='markers', name='Readout Times'))
@@ -164,7 +162,7 @@ def plot_magnetization(
         
     fig.update_layout(
         xaxis=dict(title='Time (seconds)'),
-        yaxis=dict(title='Recovery Duration (seconds)'),
+        yaxis=dict(title='Longitudinal magnetization Mz (a.u.)'),
         legend=dict(title='Legend'),
         height=600,
         margin=dict(t=40, b=40),
